@@ -1,0 +1,114 @@
+TwentyOne v1.04 Readme
+======================
+
+TwentyOne is a card game in which a player tries to get closer to 21 than the house
+(or dealer) does.  Typically, twentyone is favorable to the player (if skill is used
+in playing the game).  The rules followed by this game are as follows:
+- Dealer hits on 16 or less, stays on 17+.
+- Splits will play with one card on each one.
+- Double can only be done at the start and will hit one card.
+- Insurance can be bought when the dealer has an ace showing.
+  (costs 25% of bet (1 dollar bets cost nothing))
+- If player or dealer hit to 5 cards without going over 21, they
+  are the automatic winner.
+- If dealer or player has twentyone to start, they are the winner
+  (unless insurance can be bought or both have 21).
+- Closest to 21 without going over is the winner.
+
+TwentyOne was written using Speedsoft's Sibyl and with images snatched from the public
+domain QCard32.DLL and converted to OS/2 bitmaps.  Many thanks to Stephen Murphy and
+Daniel Di Bacco for the excellent card images (and for making the QCard DLL public
+domain (Freeware)).
+
+Source code is available from my web page at: http://pws.prserv.net/usinet.slack/
+
+Use of the program is at your own risk.
+
+Fix History:
+------------
+2001-05-18  v1.00  Original release.
+2001-05-27  v1.01  Fixed a 'bug' in the bet dialog.
+2001-05-28  v1.02  Fixed a 'bug' in the double routine.
+2001-05-31  v1.03  Attempt at fixing memory leak/some code cleanup.
+2001-06-02  v1.04  More cleanup, added a procedure back removed in previous release.
+
+To Install:
+-----------
+Unzip into a directory of your choice and start the game.  A icon installation
+script (tweninst.cmd) has been included to add the icon to your desktop.  The icon
+can then be dragged to any folder of your choosing.
+
+Options:
+--------
+TwentyOne has many, and varied, options.  The options dialog is accessed by right-
+clicking anywhere in the main window, then selecting 'options' from the pop-up
+dialog.
+General Options include:
+- Number of decks: Select one to three decks to play with.  The number of decks,
+                   if changed, takes affect with the next shuffle.
+                   Default: one.
+- Minimum Bet: Minimum amount to bet (in whole amounts only).  Can be from 1 to
+               10000.
+               Default: 1.
+- Maximum Bet: Maximum amount to bet (in whole amounts only).  Can be from minimum
+               to 10000.
+               Default: 5.
+- Initial Bank: Amount of money player is given at the game start or with each
+                reset (in whole amounts only).  Can be from minimum bet to 
+                100000.
+                Default: 100.
+- Bet Max: If checked, sets the maximum (or as much money as player has) in the
+           bet dialog.  This option is more of an convenience option for those that
+           want to bet the max with each hand.  If not checked, the bet dialog is
+           seeded with the minimum bet amount.
+The card back tab contains a list of card backs available to the game.  The current
+card back is selected in the list.  To select a different card back image, just 
+select the appropriate image.
+Pressing OK saves (and changes) your game options, pressing cancel keeps your
+current settings.
+
+To Play:
+--------
+To start a hand, press the 'play' button.  After entering your bet, cards are dealt,
+two to dealer and two to the player.  The first dealer card is face down when 
+initially dealt.  If neither have 21 to start, the other buttons become (may
+become) enabled.
+To get an additional card, press the hit button.  If you go over 21, you lose.
+To stand on your cards, press the stay button.  The dealer will then finish out
+his hand.
+If both of your cards are the same, you can split your hand.  Note, you must have
+enough money in your bank to cover the split hand and each hand will get one
+card (and only one card).  This is different than some of the rules, but leads to
+an easier game.
+If you have not taken any hits, you can double your bet (the button is not available
+if you have taken a hit.  When selected, you must have enough money in your bank
+to cover the double-down.  If you do, you are given one additional card and then the
+dealer plays out.  If you go over 21 with the additional card, you lose.
+If the dealer has an ace showing, you are given the opportunity to buy insurance.
+Insurance costs 25% of your bet (you must have enough money to cover the amount in
+your bank) and if the dealer has 21, you will get back 75% of your bet.  If you don't
+buy insurance, the hand is played through like normal (even if the dealer has 21).
+If you don't have enough money (at the beginning of the hand) to cover the current
+minimum bet amount, a prompt will ask you if you wish to reset the game (and give you,
+the player) the initial bank again (plus whatever is currently in your bank, if 
+anything).
+This game is not intended to follow each and every little esoteric rule of 21 that
+some may know of, but it tries to be close.  This game is not intended for (nor
+designed for) actual betting or gambling.
+
+Known Problems/Issues:
+----------------------
+- There is a memory leak that cannot be found in the game.  It seems to drain, at
+  times, somewhere between 4 bytes and 2K per hand.  Sometimes it does not seem
+  to leak memory at all.  But after about 10 minutes of play, expect between 50k
+  and 100k to be missing (recovered when the program exits).  Also, probably due
+  to the memory leak, after a long session of play, the program takes forever to
+  exit.  Hopefully, this leak can be found and plugged...
+- Originally a DLL was created to store and retrieve the card images from.
+  Unfortunately, using the DLL leads to memory leaks (over and above the memory
+  leak already present).  Consequently, TwentyOne links all of the images into the
+  exe produced.  This may be rectified in the future.
+
+Contact:
+--------
+Michael G. Slack (slack@attglobal.net)
