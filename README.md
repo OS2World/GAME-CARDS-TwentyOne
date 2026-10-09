@@ -3,6 +3,8 @@
 TwentyOne is a Blackjack card game for the OS/2 Presentation Manager: get closer to 21 than the dealer without going over.
 Originally written by Michael G. Slack in 2001 (Sibyl, version 1.04). Ported to C and Open Watcom 2.0 in 2026.
 
+![TwentyOne ScreenShot](/doc/TwentyOne.png)
+
 ## Version
 
 1.6
