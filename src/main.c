@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "twenty.h"
 #include "game.h"
@@ -45,10 +46,10 @@ const char bldlevel[] =
 #define MAX_LINES       6
 
 #define BTN_Y           16
-#define BTN_W           152
+#define BTN_W           156
 #define BTN_H           44
-#define BTN_GAP         8
-#define BTN_X0          8
+#define BTN_GAP         4
+#define BTN_X0          2
 
 #define INFO_X          706             /* right hand column                 */
 #define INFO_W          240
@@ -488,6 +489,182 @@ static void Command(USHORT id)
 }
 
 
+/*** Owner drawn buttons: a small picture and the text ************************/
+
+#define RGBC(r, g, b)   (((LONG)(r) << 16) | ((LONG)(g) << 8) | (LONG)(b))
+
+static void FillPoly(HPS hps, const POINTL *pt, int n, LONG fill, LONG edge)
+{
+    GpiSetColor( hps, fill );
+    GpiBeginArea( hps, BA_NOBOUNDARY | BA_ALTERNATE );
+    GpiMove( hps, (PPOINTL)&pt[0] );
+    GpiPolyLine( hps, n - 1, (PPOINTL)&pt[1] );
+    GpiEndArea( hps );
+
+    if( edge >= 0 )
+    {
+        GpiSetColor( hps, edge );
+        GpiMove( hps, (PPOINTL)&pt[n - 1] );
+        GpiPolyLine( hps, n, (PPOINTL)pt );
+    }
+}
+
+
+static void Disc(HPS hps, LONG cx, LONG cy, LONG r, LONG fill, LONG edge)
+{
+    POINTL c;
+
+    c.x = cx; c.y = cy;
+    GpiMove( hps, &c );
+    GpiSetColor( hps, fill );
+    GpiFullArc( hps, DRO_FILL, MAKEFIXED(r, 0) );
+    GpiMove( hps, &c );
+    GpiSetColor( hps, edge );
+    GpiFullArc( hps, DRO_OUTLINE, MAKEFIXED(r, 0) );
+}
+
+
+/* The pictures are 28 x 28 pixels, origin (x, y) bottom left. dis = grey. */
+static void DrawButtonIcon(HPS hps, int idx, LONG x, LONG y, BOOL dis)
+{
+    POINTL p[8];
+    LONG   edge = dis ? RGBC(120, 120, 120) : RGBC(20, 20, 20);
+    int    i;
+
+#define PT(i, a, b)  p[i].x = x + (a); p[i].y = y + (b)
+#define COL(r, g, b) (dis ? RGBC(170, 170, 170) : RGBC(r, g, b))
+
+    switch( idx )
+    {
+        case 0:                                     /* Play: green arrow      */
+            PT(0, 6, 3);  PT(1, 6, 25);  PT(2, 25, 14);
+            FillPoly( hps, p, 3, COL(40, 170, 60), edge );
+            break;
+
+        case 1:                                     /* Hit: a pencil         */
+            PT(0, 9, 5);  PT(1, 5, 9);   PT(2, 21, 25);  PT(3, 25, 21);
+            FillPoly( hps, p, 4, COL(210, 40, 40), edge );
+            PT(0, 5, 9);  PT(1, 9, 5);   PT(2, 3, 3);
+            FillPoly( hps, p, 3, COL(240, 210, 160), edge );
+            PT(0, 21, 25); PT(1, 25, 21); PT(2, 27, 23); PT(3, 23, 27);
+            FillPoly( hps, p, 4, COL(230, 150, 160), edge );
+            break;
+
+        case 2:                                     /* Stay: red stop sign   */
+            for( i = 0; i < 8; i++ )
+            {
+                double a = 3.14159265 * (2 * i + 1) / 8.0;
+                p[i].x = x + 14 + (LONG)(13.0 * cos(a));
+                p[i].y = y + 14 + (LONG)(13.0 * sin(a));
+            }
+            FillPoly( hps, p, 8, COL(200, 30, 30), edge );
+            PT(0, 6, 11);  PT(1, 22, 11);  PT(2, 22, 17);  PT(3, 6, 17);
+            FillPoly( hps, p, 4, dis ? RGBC(235, 235, 235) : RGBC(255, 255, 255), -1 );
+            break;
+
+        case 3:                                     /* Double: a yellow face */
+            Disc( hps, x + 14, y + 14, 12, COL(250, 220, 40), edge );
+            Disc( hps, x + 10, y + 17, 2, edge, edge );
+            Disc( hps, x + 18, y + 17, 2, edge, edge );
+            GpiSetColor( hps, edge );
+            PT(0, 7, 12);  GpiMove( hps, &p[0] );
+            PT(1, 10, 8);  PT(2, 14, 6);  PT(3, 18, 8);  PT(4, 21, 12);
+            GpiPolyLine( hps, 4, &p[1] );
+            break;
+
+        case 4:                                     /* Split: two cards      */
+            PT(0, 2, 4);  PT(1, 14, 4);  PT(2, 14, 24);  PT(3, 2, 24);
+            FillPoly( hps, p, 4, dis ? RGBC(225, 225, 225) : RGBC(255, 255, 255), edge );
+            PT(0, 15, 4); PT(1, 27, 4);  PT(2, 27, 24);  PT(3, 15, 24);
+            FillPoly( hps, p, 4, dis ? RGBC(225, 225, 225) : RGBC(255, 255, 255), edge );
+            Disc( hps, x + 8, y + 14, 3, COL(200, 30, 30), edge );
+            Disc( hps, x + 21, y + 14, 3, COL(200, 30, 30), edge );
+            break;
+
+        case 5:                                     /* Insure: a shield      */
+            PT(0, 14, 26); PT(1, 3, 22);  PT(2, 3, 12);  PT(3, 14, 2);
+            PT(4, 25, 12); PT(5, 25, 22);
+            FillPoly( hps, p, 6, COL(40, 90, 200), edge );
+            GpiSetColor( hps, dis ? RGBC(235, 235, 235) : RGBC(255, 255, 255) );
+            PT(0, 14, 7);  GpiMove( hps, &p[0] );
+            PT(1, 14, 21); GpiLine( hps, &p[1] );
+            PT(0, 8, 15);  GpiMove( hps, &p[0] );
+            PT(1, 20, 15); GpiLine( hps, &p[1] );
+            break;
+    }
+#undef PT
+#undef COL
+}
+
+
+static void DrawButton(PUSERBUTTON pub, int idx)
+{
+    HPS    hps = pub->hps;
+    RECTL  rcl;
+    BOOL   down = (pub->fsState & BDS_HILITED) != 0;
+    BOOL   dis  = (pub->fsState & BDS_DISABLED) != 0;
+    BOOL   def  = (pub->fsState & BDS_DEFAULT) != 0;
+    POINTL pt;
+    char   text[64];
+    RECTL  rt;
+    LONG   h;
+
+    WinQueryWindowRect( pub->hwnd, &rcl );
+    h = rcl.yTop - rcl.yBottom;
+
+    GpiCreateLogColorTable( hps, 0, LCOLF_RGB, 0, 0, NULL );
+
+    /* face */
+    GpiSetColor( hps, RGBC(204, 204, 204) );
+    pt.x = rcl.xLeft;  pt.y = rcl.yBottom;  GpiMove( hps, &pt );
+    pt.x = rcl.xRight - 1;  pt.y = rcl.yTop - 1;
+    GpiBox( hps, DRO_FILL, &pt, 0, 0 );
+
+    /* border: raised, or pressed in */
+    GpiSetColor( hps, def ? RGBC(0, 0, 0) : RGBC(80, 80, 80) );
+    pt.x = rcl.xLeft;  pt.y = rcl.yBottom;  GpiMove( hps, &pt );
+    pt.x = rcl.xRight - 1;  pt.y = rcl.yTop - 1;
+    GpiBox( hps, DRO_OUTLINE, &pt, 0, 0 );
+
+    GpiSetColor( hps, down ? RGBC(110, 110, 110) : RGBC(255, 255, 255) );
+    pt.x = rcl.xLeft + 1;  pt.y = rcl.yBottom + 1;  GpiMove( hps, &pt );
+    pt.y = rcl.yTop - 2;   GpiLine( hps, &pt );
+    pt.x = rcl.xRight - 2; GpiLine( hps, &pt );
+    GpiSetColor( hps, down ? RGBC(255, 255, 255) : RGBC(110, 110, 110) );
+    pt.x = rcl.xRight - 2; pt.y = rcl.yBottom + 1;  GpiLine( hps, &pt );
+    pt.x = rcl.xLeft + 1;  GpiLine( hps, &pt );
+
+    /* picture and text (moved a little when pressed) */
+    if( idx >= 0 )
+        DrawButtonIcon( hps, idx, rcl.xLeft + 7 + (down ? 1 : 0),
+                        rcl.yBottom + (h - 28) / 2 - (down ? 1 : 0), dis );
+
+    WinQueryWindowText( pub->hwnd, sizeof(text), text );
+    rt.xLeft   = rcl.xLeft + 38 + (down ? 1 : 0);
+    rt.xRight  = rcl.xRight - 2;
+    rt.yBottom = rcl.yBottom - (down ? 1 : 0);
+    rt.yTop    = rcl.yTop - (down ? 1 : 0);
+    WinDrawText( hps, -1, (PSZ)text, &rt, dis ? RGBC(120, 120, 120) : RGBC(0, 0, 0),
+                 RGBC(204, 204, 204), DT_VCENTER | DT_CENTER | DT_TEXTATTRS );
+}
+
+
+/* A click on a button can reach us as WM_CONTROL (BN_CLICKED) and as
+   WM_COMMAND: run it only once. */
+static void ButtonClick(USHORT id)
+{
+    static ULONG  lastTime;
+    static USHORT lastId;
+    ULONG         now = WinGetCurrentTime( hab );
+
+    if( id == lastId && now - lastTime < 400 )
+        return;
+    lastId   = id;
+    lastTime = now;
+    Command( id );
+}
+
+
 /*** Window procedure *********************************************************/
 
 static MRESULT EXPENTRY ClientWndProc(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM mp2)
@@ -502,7 +679,7 @@ static MRESULT EXPENTRY ClientWndProc(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM m
             for( i = 0; i < 6; i++ )
             {
                 WinCreateWindow( hwnd, WC_BUTTON, BtnText[i] >= 0 ? tr(BtnText[i]) : "",
-                                 WS_VISIBLE | BS_PUSHBUTTON,
+                                 WS_VISIBLE | BS_USERBUTTON,
                                  BTN_X0 + i * (BTN_W + BTN_GAP), BTN_Y, BTN_W, BTN_H,
                                  hwnd, HWND_TOP, BtnIds[i], NULL, NULL );
             }
@@ -517,8 +694,24 @@ static MRESULT EXPENTRY ClientWndProc(HWND hwnd, ULONG msg, MPARAM mp1, MPARAM m
             WinEndPaint( hps );
             return 0;
 
+        case WM_CONTROL:
+            for( i = 0; i < 6; i++ )
+                if( BtnIds[i] == SHORT1FROMMP(mp1) )
+                    break;
+            if( i < 6 )
+            {
+                if( SHORT2FROMMP(mp1) == BN_PAINT )
+                    DrawButton( (PUSERBUTTON)PVOIDFROMMP(mp2), i );
+                else if( SHORT2FROMMP(mp1) == BN_CLICKED )
+                    ButtonClick( SHORT1FROMMP(mp1) );
+            }
+            return 0;
+
         case WM_COMMAND:
-            Command( SHORT1FROMMP(mp1) );
+            if( SHORT1FROMMP(mp2) == CMDSRC_ACCELERATOR || SHORT1FROMMP(mp2) == CMDSRC_MENU )
+                Command( SHORT1FROMMP(mp1) );
+            else
+                ButtonClick( SHORT1FROMMP(mp1) );       /* from a button */
             return 0;
     }
 

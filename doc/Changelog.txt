@@ -18,6 +18,7 @@ TwentyOne - Changelog
 - The dealer stops at 5 cards (the Pascal version could overflow its
   card array)
 - Standard About dialog and BLDLEVEL information
+- The buttons show a small picture next to the text (as in the Pascal version)
 - New program icon (128 x 128)
 - The card bitmaps are loaded once at start and no objects are created
   per hand (the Pascal version had an unfound memory leak per hand)
