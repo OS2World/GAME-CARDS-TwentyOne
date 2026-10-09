@@ -1,0 +1,26 @@
+TwentyOne - Changelog
+=====================
+
+1.6 (2026-10-09)
+- Rewritten in C for OpenWatcom 2.0 (the Sibyl Pascal source is in legacy\)
+- New project layout: src/, bin/, doc/, help/, legacy/
+- Released under the GNU GPL v3
+- Menus: Game / Options / Help with Ctrl+N (play), Ctrl+Q (quit hand),
+  Ctrl+X (exit), Ctrl+F (Frame Controls); letters H S D P I during a hand
+- 6 languages for the interface and the online help (English, Spanish,
+  Dutch, German, French, Italian), switchable at runtime; the language
+  is saved
+- Settings dialog: number of decks, bet limits, initial bank, bet the
+  maximum by default, card back (six backs); settings are saved to
+  TwentyOne.cfg
+- Larger cards (1.5 times) and window; results are shown in the window
+  instead of in message boxes; the scores of the hands are shown
+- The dealer stops at 5 cards (the Pascal version could overflow its
+  card array)
+- Standard About dialog and BLDLEVEL information
+- New program icon (128 x 128)
+- The card bitmaps are loaded once at start and no objects are created
+  per hand (the Pascal version had an unfound memory leak per hand)
+
+1.04 (2001-06-02)
+- Original release by Michael G. Slack (Sibyl)

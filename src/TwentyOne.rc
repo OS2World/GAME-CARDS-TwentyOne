@@ -1,0 +1,225 @@
+/*******************************************************************************
+* TWENTYONE.RC - resources of TwentyOne
+*
+* Copyright (C) 2001 Michael G. Slack
+* Copyright (C) 2026 OS2World
+*******************************************************************************/
+
+#include <os2.h>
+#include "twenty.h"
+
+ICON ID_MAIN PRELOAD src\TwentyOne.ico
+
+
+/*******************************************************************************
+* Menu. The texts are replaced at runtime (set_language); these are the
+* English defaults. Menu ids follow plan.txt section 6.4.
+*******************************************************************************/
+
+MENU ID_MAIN PRELOAD MOVEABLE
+BEGIN
+    SUBMENU "~Game", IDM_SUBMENU_GAME
+    BEGIN
+        MENUITEM "~New Game\tCtrl+N",       IDM_PLAY
+        MENUITEM "~Quit Game\tCtrl+Q",      IDM_QUIT, , MIA_DISABLED
+        MENUITEM SEPARATOR
+        MENUITEM "E~xit\tCtrl+X",           IDM_EXIT
+    END
+
+    SUBMENU "~Options", IDM_SUBMENU_OPTIONS
+    BEGIN
+        MENUITEM "~Settings...",            IDM_SETTINGS
+        MENUITEM SEPARATOR
+        SUBMENU "~Language", IDM_SUBMENU_LANG
+        BEGIN
+            MENUITEM "~English",            IDM_LANG_EN
+            MENUITEM "~Espanol",            IDM_LANG_ES
+            MENUITEM "~Nederlands",         IDM_LANG_NL
+            MENUITEM "~Deutsch",            IDM_LANG_DE
+            MENUITEM "~Francais",           IDM_LANG_FR
+            MENUITEM "~Italiano",           IDM_LANG_IT
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "~Frame Controls\tCtrl+F", IDM_FRAME
+        MENUITEM SEPARATOR
+        MENUITEM "~Save settings on exit",  IDM_SAVEONEXIT
+    END
+
+    SUBMENU "~Help", IDM_SUBMENU_HELP
+    BEGIN
+        MENUITEM "~Help for help...",       IDM_HELPUSING, , MIA_DISABLED
+        MENUITEM "~Extended help...",       IDM_HELPEXT, , MIA_DISABLED
+        MENUITEM "~Keys help...",           IDM_HELPKEYS, , MIA_DISABLED
+        MENUITEM "Help ~index...",          IDM_HELPINDEX, , MIA_DISABLED
+        MENUITEM SEPARATOR
+        MENUITEM "~About...",               IDM_ABOUT
+    END
+END
+
+
+/*******************************************************************************
+* Accelerators: Ctrl+letter commands (both cases) and the plain letters used
+* while a hand is played.
+*******************************************************************************/
+
+ACCELTABLE ID_MAIN PRELOAD
+BEGIN
+    "n", IDM_PLAY,   CONTROL
+    "N", IDM_PLAY,   CONTROL
+    "q", IDM_QUIT,   CONTROL
+    "Q", IDM_QUIT,   CONTROL
+    "x", IDM_EXIT,   CONTROL
+    "X", IDM_EXIT,   CONTROL
+    "f", IDM_FRAME,  CONTROL
+    "F", IDM_FRAME,  CONTROL
+    "h", IDM_HIT,    CHAR
+    "H", IDM_HIT,    CHAR
+    "s", IDM_STAY,   CHAR
+    "S", IDM_STAY,   CHAR
+    "d", IDM_DOUBLE, CHAR
+    "D", IDM_DOUBLE, CHAR
+    "p", IDM_SPLIT,  CHAR
+    "P", IDM_SPLIT,  CHAR
+    "i", IDM_INSURE, CHAR
+    "I", IDM_INSURE, CHAR
+    27,  IDM_ESCAPE, CHAR
+END
+
+
+/*******************************************************************************
+* About dialog (plan.txt section 11): English in every language.
+*******************************************************************************/
+
+DLGTEMPLATE DLG_ABOUT PRELOAD MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "About TwentyOne", DLG_ABOUT, 32, 24, 240, 110,, FCF_TITLEBAR|FCF_DLGBORDER
+    BEGIN
+        CTEXT "TwentyOne for OS/2",             -1, 10, 90, 220, 8
+        CTEXT "Version 1.6",                   -1, 10, 78, 220, 8
+        CTEXT "OpenWatcom Release",             -1, 10, 66, 220, 8
+        CTEXT "(c) 2001, Michael G. Slack",     -1, 10, 54, 220, 8
+        CTEXT "(c) 2026, OS2World",             -1, 10, 42, 220, 8
+        CTEXT "GNU GPL V3",                     -1, 10, 30, 220, 8
+        DEFPUSHBUTTON "Close", DID_OK,           98, 10, 44, 14, WS_GROUP
+    END
+END
+
+
+/*******************************************************************************
+* Bet dialog
+*******************************************************************************/
+
+DLGTEMPLATE DLG_BET PRELOAD MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Place your bet", DLG_BET, 40, 60, 156, 96,, FCF_SYSMENU|FCF_TITLEBAR
+    BEGIN
+        CONTROL "Bet:", IDD_BET_LABEL, 10, 72, 50, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_BET_SPIN, 64, 70, 60, 12, "#32", SPBS_MASTER|SPBS_NUMERICONLY|SPBS_JUSTRIGHT|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+
+        CONTROL "Bank", IDD_BET_BANKTXT, 10, 52, 70, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_BET_BANK, 84, 52, 62, 8, "#5", SS_TEXT|DT_RIGHT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "Minimum bet", IDD_BET_MINTXT, 10, 42, 70, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_BET_MIN, 84, 42, 62, 8, "#5", SS_TEXT|DT_RIGHT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "Maximum bet", IDD_BET_MAXTXT, 10, 32, 70, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_BET_MAX, 84, 32, 62, 8, "#5", SS_TEXT|DT_RIGHT|DT_TOP|WS_VISIBLE|WS_GROUP
+
+        DEFPUSHBUTTON "OK", DID_OK, 14, 8, 50, 14
+        PUSHBUTTON "Cancel", DID_CANCEL, 84, 8, 50, 14
+    END
+END
+
+
+/*******************************************************************************
+* Settings dialog
+*******************************************************************************/
+
+DLGTEMPLATE DLG_OPTIONS PRELOAD MOVEABLE DISCARDABLE
+BEGIN
+    DIALOG "Settings", DLG_OPTIONS, 40, 40, 236, 176,, FCF_SYSMENU|FCF_TITLEBAR
+    BEGIN
+        CONTROL "Number of decks", IDD_OPT_DECKS, 8, 112, 104, 56, "#5", SS_GROUPBOX|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "1 deck",  IDD_OPT_DECK1, 16, 146, 90, 10, "#3", BS_AUTORADIOBUTTON|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+        CONTROL "2 decks", IDD_OPT_DECK2, 16, 134, 90, 10, "#3", BS_AUTORADIOBUTTON|WS_VISIBLE
+        CONTROL "3 decks", IDD_OPT_DECK3, 16, 122, 90, 10, "#3", BS_AUTORADIOBUTTON|WS_VISIBLE
+
+        CONTROL "Minimum bet", IDD_OPT_MINTXT, 124, 158, 100, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_OPT_MIN, 124, 146, 70, 10, "#6", ES_AUTOSCROLL|ES_MARGIN|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+        CONTROL "Maximum bet", IDD_OPT_MAXTXT, 124, 134, 100, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_OPT_MAX, 124, 122, 70, 10, "#6", ES_AUTOSCROLL|ES_MARGIN|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+        CONTROL "Initial bank", IDD_OPT_BANKTXT, 124, 110, 100, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_OPT_BANK, 124, 98, 70, 10, "#6", ES_AUTOSCROLL|ES_MARGIN|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+
+        CONTROL "Bet the maximum by default", IDD_OPT_BETMAX, 8, 98, 112, 10, "#3", BS_AUTOCHECKBOX|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+
+        CONTROL "Card back", IDD_OPT_BACKTXT, 8, 82, 100, 8, "#5", SS_TEXT|DT_LEFT|DT_TOP|WS_VISIBLE|WS_GROUP
+        CONTROL "", IDD_OPT_BACK, 8, 68, 50, 12, "#32", SPBS_MASTER|SPBS_NUMERICONLY|SPBS_JUSTRIGHT|WS_VISIBLE|WS_GROUP|WS_TABSTOP
+        CONTROL "", IDD_OPT_PREVIEW, 124, 22, 44, 66, "#5", SS_TEXT|WS_VISIBLE|WS_GROUP
+
+        DEFPUSHBUTTON "OK", DID_OK, 10, 6, 50, 14
+        PUSHBUTTON "Cancel", DID_CANCEL, 66, 6, 50, 14
+    END
+END
+
+
+/*******************************************************************************
+* Card bitmaps: 52 faces (rank-major: 2C 2D 2H 2S 3C ... AS) and the card backs
+*******************************************************************************/
+
+BITMAP 1000 src\cards\card00.bmp
+BITMAP 1001 src\cards\card01.bmp
+BITMAP 1002 src\cards\card02.bmp
+BITMAP 1003 src\cards\card03.bmp
+BITMAP 1004 src\cards\card04.bmp
+BITMAP 1005 src\cards\card05.bmp
+BITMAP 1006 src\cards\card06.bmp
+BITMAP 1007 src\cards\card07.bmp
+BITMAP 1008 src\cards\card08.bmp
+BITMAP 1009 src\cards\card09.bmp
+BITMAP 1010 src\cards\card10.bmp
+BITMAP 1011 src\cards\card11.bmp
+BITMAP 1012 src\cards\card12.bmp
+BITMAP 1013 src\cards\card13.bmp
+BITMAP 1014 src\cards\card14.bmp
+BITMAP 1015 src\cards\card15.bmp
+BITMAP 1016 src\cards\card16.bmp
+BITMAP 1017 src\cards\card17.bmp
+BITMAP 1018 src\cards\card18.bmp
+BITMAP 1019 src\cards\card19.bmp
+BITMAP 1020 src\cards\card20.bmp
+BITMAP 1021 src\cards\card21.bmp
+BITMAP 1022 src\cards\card22.bmp
+BITMAP 1023 src\cards\card23.bmp
+BITMAP 1024 src\cards\card24.bmp
+BITMAP 1025 src\cards\card25.bmp
+BITMAP 1026 src\cards\card26.bmp
+BITMAP 1027 src\cards\card27.bmp
+BITMAP 1028 src\cards\card28.bmp
+BITMAP 1029 src\cards\card29.bmp
+BITMAP 1030 src\cards\card30.bmp
+BITMAP 1031 src\cards\card31.bmp
+BITMAP 1032 src\cards\card32.bmp
+BITMAP 1033 src\cards\card33.bmp
+BITMAP 1034 src\cards\card34.bmp
+BITMAP 1035 src\cards\card35.bmp
+BITMAP 1036 src\cards\card36.bmp
+BITMAP 1037 src\cards\card37.bmp
+BITMAP 1038 src\cards\card38.bmp
+BITMAP 1039 src\cards\card39.bmp
+BITMAP 1040 src\cards\card40.bmp
+BITMAP 1041 src\cards\card41.bmp
+BITMAP 1042 src\cards\card42.bmp
+BITMAP 1043 src\cards\card43.bmp
+BITMAP 1044 src\cards\card44.bmp
+BITMAP 1045 src\cards\card45.bmp
+BITMAP 1046 src\cards\card46.bmp
+BITMAP 1047 src\cards\card47.bmp
+BITMAP 1048 src\cards\card48.bmp
+BITMAP 1049 src\cards\card49.bmp
+BITMAP 1050 src\cards\card50.bmp
+BITMAP 1051 src\cards\card51.bmp
+BITMAP 1100 src\cards\back0.bmp
+BITMAP 1101 src\cards\back1.bmp
+BITMAP 1102 src\cards\back2.bmp
+BITMAP 1103 src\cards\back3.bmp
+BITMAP 1104 src\cards\back4.bmp
+BITMAP 1105 src\cards\back5.bmp

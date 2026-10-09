@@ -1,0 +1,9 @@
+bin/*
+*.obj
+*.res
+*.map
+*.err
+*.log
+*.tmp
+*.cfg
+*~
